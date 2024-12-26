@@ -67,7 +67,9 @@ const updateTodo = (text) => {
         let todoTitle = todo.querySelector("h3")
 
         if(todoTitle.innerText === oldInputValue) {
-            todoTitle.innerText = text
+            todoTitle.innerText = text;
+
+            updateTodoLocalStorage(oldInputValue, text)
         }
     })
 }
@@ -146,10 +148,14 @@ document.addEventListener("click", (e) => {
     
     if (targetElement.classList.contains("finish-todo")) {
         parentElement.classList.toggle("done") //como o elemento pai foi selecionado, td vez q for finalizado ele muda automaticamente, o toggle é para inverter a ação ao clicar novamente //
+    
+        updateTodoStatusLocalStorage(todoTitle);
     }
 
     if (targetElement.classList.contains("remove-todo")) {
         parentElement.remove(); // aqui o elemento pai é removido
+
+        removeTodoLocalStorage(todoTitle)
     }
 
     if (targetElement.classList.contains("edit-todo")) {
@@ -211,6 +217,14 @@ const getTodosLocalStorage = () => {
     return todos
 }
 
+const loadTodos = () => {
+    const todos = getTodosLocalStorage()
+
+    todos.forEach((todo) => {
+        saveTodo(todo.text, todo.done, 0)
+    })
+}
+
 const saveTodoLocalStorage = (todo) => {
     const todos = getTodosLocalStorage()
 
@@ -218,3 +232,36 @@ const saveTodoLocalStorage = (todo) => {
 
     localStorage.setItem("todos", JSON.stringify(todos))
 }
+
+const removeTodoLocalStorage = (todoText) => {
+    const todos = getTodosLocalStorage(); 
+
+    const filteredTodos = todos.filter((todo) => todo.text !== todoText)
+
+    localStorage.setItem("todos", JSON.stringify(filteredTodos))
+
+}
+
+const updateTodoStatusLocalStorage = (todoText) => {
+    const todos = getTodosLocalStorage(); 
+
+   todos.map((todo) => 
+    todo.text === todoText ? todo.done = !todo.done : null
+);
+
+    localStorage.setItem("todos", JSON.stringify(todos))
+
+}
+
+const updateTodoLocalStorage = (todoOldText, todoNewText) => {
+    const todos = getTodosLocalStorage(); 
+
+   todos.map((todo) => 
+    todo.text === todoOldText ? (todo.done = todoNewText):null
+);
+
+    localStorage.setItem("todos", JSON.stringify(todos))
+
+}
+
+loadTodos();
